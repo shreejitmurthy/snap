@@ -1,0 +1,3 @@
+[submodule "snap/vendor/SDL"]
+	path = snap/vendor/SDL
+	url = https://github.com/libsdl-org/SDL.git
