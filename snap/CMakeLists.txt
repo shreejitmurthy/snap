@@ -7,7 +7,7 @@ include_directories(vendor)
 
 add_subdirectory(vendor/SDL)
 
-file(GLOB_RECURSE ENGINE_SOURCES "./src/*.c")
+file(GLOB_RECURSE ENGINE_SOURCES src/gfx.c src/shader.c)
 add_library(libsnap STATIC ${ENGINE_SOURCES} vendor/glad/glad.c)
 
 find_package(OpenGL REQUIRED)

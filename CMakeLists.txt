@@ -3,7 +3,7 @@ project(snap_examples C)
 
 add_subdirectory(snap)
 
-file(GLOB_RECURSE SOURCES "examples/*.c")
+file(GLOB_RECURSE SOURCES examples/clear.c)
 
 add_executable(${PROJECT_NAME} ${SOURCES})
 
