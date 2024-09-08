@@ -1,3 +1,6 @@
 [submodule "snap/vendor/SDL"]
 	path = snap/vendor/SDL
 	url = https://github.com/libsdl-org/SDL.git
+[submodule "snap/vendor/cglm"]
+	path = snap/vendor/cglm
+	url = https://github.com/recp/cglm.git
