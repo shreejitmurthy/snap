@@ -1,6 +1,15 @@
 #include "gfx.h"
 #include <assert.h>
 #include <glad/glad.h>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
+
+/* _________
+   \_   ___ \  ___________   ____
+   /    \  \/ /  _ \_  __ \_/ __ \
+   \     \___(  <_> )  | \/\  ___/
+    \______  /\____/|__|    \___  >
+           \/                   \/  */
 
 void gfx_init(snp_window_args args) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
@@ -29,6 +38,11 @@ void gfx_init(snp_window_args args) {
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(0, 0, state.win_args.width, state.win_args.height);
+
+    state.texture_shader = snp_shader_init((snp_shader_args){
+        .vertex_path = "../snap/shaders/texture.vert",
+        .fragment_path = "../snap/shaders/texture.frag"
+    });
 }
 
 bool gfx_window_open() {
@@ -50,13 +64,17 @@ bool gfx_window_open() {
 }
 
 void gfx_refresh() {
+    SDL_GL_SwapWindow(state.window);
+}
+
+void gfx_clear() {
     // check if rgb values are zero/undefined
     if (state.win_args.clear_colour.r == 0 && state.win_args.clear_colour.g == 0 && state.win_args.clear_colour.b == 0) {
         // check if hex value is zero/undefined
         if (state.win_args.clear_colour.hex == 0x00000000) {
             glClearColor(0.f, 0.f, 0.f, 0.f);
         }
-        // rgb value zero/undefined, hex value non-zero/defined
+            // rgb value zero/undefined, hex value non-zero/defined
         else {
             float r = (state.win_args.clear_colour.hex >> 16) & 0xFF;
             float g = (state.win_args.clear_colour.hex >> 8) & 0xFF;
@@ -71,8 +89,6 @@ void gfx_refresh() {
     }
 
     glClear(GL_COLOR_BUFFER_BIT);
-
-    SDL_GL_SwapWindow(state.window);
 }
 
 void gfx_destroy() {
@@ -80,3 +96,134 @@ void gfx_destroy() {
     SDL_DestroyWindow(state.window);
     SDL_Quit();
 }
+
+/* ___________              __
+   \__    ___/___ ___  ____/  |_ __ _________   ____
+     |    |_/ __ \\  \/  /\   __\  |  \_  __ \_/ __ \
+     |    |\  ___/ >    <  |  | |  |  /|  | \/\  ___/
+     |____| \___  >__/\_ \ |__| |____/ |__|    \___  >
+                \/      \/                         \/  */
+
+snp_texture snp_texture_init(const char* path) {
+    snp_texture texture;
+    texture.shader = state.texture_shader;
+    glGenTextures(1, &texture.ID);
+    glBindTexture(GL_TEXTURE_2D, texture.ID);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST_MIPMAP_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    unsigned char* data = stbi_load(path, &texture.width, &texture.height, &texture.nr_channels, 4);
+    if (data) {
+        glEnable(GL_BLEND);
+        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texture.width, texture.height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+        stbi_image_free(data);
+    } else {
+        fprintf(stderr, "Failed to load texture");
+    }
+
+    snp_quad quad = (snp_quad){0, 0, (float)texture.width, (float)texture.height};
+
+    snp_texture_apply_quad(&texture, quad);
+
+    // memcpy(texture.vertices, v, sizeof(v));
+
+    unsigned int i[6] = {
+            0, 1, 3, // first triangle
+            1, 2, 3  // second triangle
+    };
+
+    memcpy(texture.indices, i, sizeof(i));
+
+    snp_texture_gen_buffers(&texture);
+
+    return texture;
+}
+
+void snp_texture_apply_quad(snp_texture* texture, snp_quad quad) {
+    texture->quad = quad;
+    float u0 = texture->quad.x / texture->width;
+    float v0 = texture->quad.y / texture->height;
+    float u1 = (texture->quad.x + texture->quad.w) / texture->width;
+    float v1 = (texture->quad.y + texture->quad.h) / texture->height;
+
+    float halfWidth = texture->quad.w / 2.0f;
+    float halfHeight = texture->quad.h / 2.0f;
+
+    float v[32] = {
+            // positions          // colors           // texture coords
+            halfWidth,  halfHeight, 0.0f,    1.0f, 0.0f, 0.0f,   u1, v1,   // top right
+            halfWidth, -halfHeight, 0.0f,    0.0f, 1.0f, 0.0f,   u1, v0,   // bottom right
+            -halfWidth, -halfHeight, 0.0f,   0.0f, 0.0f, 1.0f,   u0, v0,   // bottom left
+            -halfWidth,  halfHeight, 0.0f,   1.0f, 1.0f, 0.0f,   u0, v1    // top left
+    };
+
+    memcpy(texture->vertices, v, sizeof(v));
+}
+
+void snp_texture_gen_buffers(snp_texture* texture) {
+    glGenVertexArrays(1, &texture->VAO);
+    glGenBuffers(1, &texture->VBO);
+    glGenBuffers(1, &texture->EBO);
+
+    glBindVertexArray(texture->VAO);
+
+    glBindBuffer(GL_ARRAY_BUFFER, texture->VBO);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(texture->vertices), texture->vertices, GL_STATIC_DRAW);
+
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, texture->EBO);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(texture->indices), texture->indices, GL_STATIC_DRAW);
+
+    // position attribute
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+    // color attribute
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
+    // texture coord attribute
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
+}
+
+void snp_texture_updateVBO(snp_texture texture) {
+    glBindBuffer(GL_ARRAY_BUFFER, texture.VBO);
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(texture.vertices), texture.vertices);
+}
+
+mat4 default_projection;
+
+
+void snp_texture_draw(snp_texture_draw_args args) {
+    if (args.quad.w == 0.f) {
+        args.quad = (snp_quad){0, 0, args.texture.width, args.texture.height};
+    }
+    snp_texture_apply_quad(&args.texture, args.quad);
+    snp_texture_updateVBO(args.texture);
+
+    glm_ortho(0.0f, state.win_args.width, state.win_args.height, 0.0f, -1.0f, 1.0f, default_projection);
+
+    vec2 position = {args.x, args.y};
+    mat4 transform;
+    glm_mat4_identity(transform);
+
+    vec3 translation = {position[0], position[1], 0.0f};
+    glm_translate(transform, translation);
+    vec3 finalScale = {args.sx == 0 ? 1.0f : args.sx, args.sy == 0 ? 1.0f : args.sy, 1.0f};
+    glm_scale(transform, finalScale);
+
+    snp_shader_use(args.texture.shader);
+    snp_shader_set_mat4(args.texture.shader, "projection", default_projection);
+    snp_shader_set_mat4(args.texture.shader, "model", transform);
+
+    glBindTexture(GL_TEXTURE_2D, args.texture.ID);
+    glBindVertexArray(args.texture.VAO);
+
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+}
+
+void snp_texture_delete(snp_texture texture) {
+    glDeleteTextures(1, &texture.ID);
+}
+
