@@ -11,7 +11,7 @@
     \______  /\____/|__|    \___  >
            \/                   \/  */
 
-void gfx_init(snp_window_args args) {
+void snp_gfx_init(snp_window_args args) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
         fprintf(stderr, "%s\n", SDL_GetError());
         exit(1);
@@ -45,7 +45,7 @@ void gfx_init(snp_window_args args) {
     });
 }
 
-bool gfx_window_open() {
+bool snp_gfx_window_open() {
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch(event.type) {
@@ -63,11 +63,11 @@ bool gfx_window_open() {
     return !state.quit;
 }
 
-void gfx_refresh() {
+void snp_gfx_refresh() {
     SDL_GL_SwapWindow(state.window);
 }
 
-void gfx_clear() {
+void snp_gfx_clear() {
     // check if rgb values are zero/undefined
     if (state.win_args.clear_colour.r == 0 && state.win_args.clear_colour.g == 0 && state.win_args.clear_colour.b == 0) {
         // check if hex value is zero/undefined
@@ -91,7 +91,7 @@ void gfx_clear() {
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void gfx_destroy() {
+void snp_gfx_destroy() {
     SDL_GL_DestroyContext(state.context);
     SDL_DestroyWindow(state.window);
     SDL_Quit();
@@ -154,10 +154,10 @@ void snp_texture_apply_quad(snp_texture* texture, snp_quad quad) {
 
     float v[32] = {
             // positions          // colors           // texture coords
-            halfWidth,  halfHeight, 0.0f,    1.0f, 0.0f, 0.0f,   u1, v1,   // top right
-            halfWidth, -halfHeight, 0.0f,    0.0f, 1.0f, 0.0f,   u1, v0,   // bottom right
-            -halfWidth, -halfHeight, 0.0f,   0.0f, 0.0f, 1.0f,   u0, v0,   // bottom left
-            -halfWidth,  halfHeight, 0.0f,   1.0f, 1.0f, 0.0f,   u0, v1    // top left
+            halfWidth,  halfHeight, 0.0f,    1.0f, 0.0f, 0.0f,   u1, v0,   // top right
+            halfWidth, -halfHeight, 0.0f,    0.0f, 1.0f, 0.0f,   u1, v1,   // bottom right
+            -halfWidth, -halfHeight, 0.0f,   0.0f, 0.0f, 1.0f,   u0, v1,   // bottom left
+            -halfWidth,  halfHeight, 0.0f,   1.0f, 1.0f, 0.0f,   u0, v0    // top left
     };
 
     memcpy(texture->vertices, v, sizeof(v));
@@ -213,9 +213,9 @@ void snp_texture_draw(snp_texture_draw_args args) {
     vec3 finalScale = {args.sx == 0 ? 1.0f : args.sx, args.sy == 0 ? 1.0f : args.sy, 1.0f};
     glm_scale(transform, finalScale);
 
-    snp_shader_use(args.texture.shader);
-    snp_shader_set_mat4(args.texture.shader, "projection", default_projection);
-    snp_shader_set_mat4(args.texture.shader, "model", transform);
+    snp_shader_use(state.texture_shader);
+//    snp_shader_set_mat4(state.texture_shader, "projection", default_projection);
+    snp_shader_set_mat4(state.texture_shader, "model", transform);
 
     glBindTexture(GL_TEXTURE_2D, args.texture.ID);
     glBindVertexArray(args.texture.VAO);
@@ -226,4 +226,52 @@ void snp_texture_draw(snp_texture_draw_args args) {
 void snp_texture_delete(snp_texture texture) {
     glDeleteTextures(1, &texture.ID);
 }
+
+snp_camera snp_camera_init() {
+    snp_camera camera;
+    glm_mat4_zero(camera.projection);
+    glm_mat4_zero(camera.view);
+    camera.zoom = 1.f;
+    glm_vec2_zero(camera.position);
+    return camera;
+}
+
+void snp_camera_setpos(snp_camera* camera, float x, float y) {
+    glm_vec2_copy((vec2){x, y}, camera->position);
+}
+
+void snp_camera_get_view(snp_camera* camera) {
+    vec3 camera_pos = {0.0f, 0.0f, 1.0f};
+    vec3 target_pos = {0.0f, 0.0f, 0.0f};
+    vec3 up_vector  = {0.0f, 1.0f, 0.0f};
+
+    glm_lookat(camera_pos, target_pos, up_vector, camera->view);
+}
+
+void snp_camera_get_proj(snp_camera* camera) {
+    float left   = camera->position[0] - (state.win_args.width  / 2.0f) / camera->zoom;
+    float right  = camera->position[0] + (state.win_args.width  / 2.0f) / camera->zoom;
+    float top    = camera->position[1] + (state.win_args.height / 2.0f) / camera->zoom;
+    float bottom = camera->position[1] - (state.win_args.height / 2.0f) / camera->zoom;
+
+    glm_ortho(left, right, bottom, top, 0.1f, 100.0f, camera->projection);
+}
+
+void snp_camera_attach(snp_camera camera) {
+    snp_camera_get_proj(&camera);
+    snp_camera_get_view(&camera);
+    snp_shader_set_mat4(state.texture_shader, "view", camera.view);
+    snp_shader_set_mat4(state.texture_shader, "projection", camera.projection);
+}
+
+void snp_camera_detach(snp_camera camera) {
+    mat4 proj;
+    mat4 view;
+    glm_mat4_identity(proj);
+    glm_mat4_identity(view);
+    // glm_ortho(0.0f, state.width, state.height, 0.0f, -1.0f, 1.0f, proj);
+    snp_shader_set_mat4(state.texture_shader, "projection", proj);
+    snp_shader_set_mat4(state.texture_shader, "view", view);
+}
+
 

@@ -6,9 +6,10 @@
 #include <stdint.h>
 #include "shader.h"
 
-#ifdef SNAP_IMPLEMENTATION
-#include <SDL3/SDL_main.h>
-#endif // SNAP_IMPLEMENTATION
+#ifdef __cplusplus
+extern "C"
+{
+#endif
 
 typedef struct {
     float r, g, b, a;
@@ -42,6 +43,13 @@ typedef struct {
     float sx, sy;
 } snp_texture_draw_args;
 
+typedef struct {
+    snp_shader shader;
+    float zoom;
+    vec2 position;
+    mat4 projection;
+    mat4 view;
+} snp_camera;
 
 struct {
     snp_window_args win_args;
@@ -51,11 +59,11 @@ struct {
     snp_shader texture_shader;
 } state;
 
-void gfx_init(snp_window_args args);
-bool gfx_window_open();
-void gfx_refresh();
-void gfx_clear();
-void gfx_destroy();
+void snp_gfx_init(snp_window_args args);
+bool snp_gfx_window_open();
+void snp_gfx_refresh();
+void snp_gfx_clear();
+void snp_gfx_destroy();
 
 snp_texture snp_texture_init(const char* path);
 void snp_texture_apply_quad(snp_texture* texture, snp_quad quad);
@@ -63,3 +71,14 @@ void snp_texture_gen_buffers(snp_texture* texture);
 void snp_texture_updateVBO(snp_texture texture);
 void snp_texture_draw(snp_texture_draw_args args);
 void snp_texture_delete(snp_texture texture);
+
+snp_camera snp_camera_init();
+void snp_camera_setpos(snp_camera* camera, float x, float y);
+void snp_camera_get_view(snp_camera* camera);
+void snp_camera_get_proj(snp_camera* camera);
+void snp_camera_attach(snp_camera camera);
+void snp_camera_detach(snp_camera camera);
+
+#ifdef __cplusplus
+}
+#endif
