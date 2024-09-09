@@ -35,13 +35,15 @@ void snp_gfx_init(snp_window_args args) {
         fprintf(stderr, "Failed to load GLAD\n");
     }
 
+//    stbi_set_flip_vertically_on_load(true);
+
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(0, 0, state.win_args.width, state.win_args.height);
 
     state.texture_shader = snp_shader_init((snp_shader_args){
-        .vertex_path = "../snap/shaders/texture.vert",
-        .fragment_path = "../snap/shaders/texture.frag"
+            .vertex_path = "../snap/shaders/texture.vert",
+            .fragment_path = "../snap/shaders/texture.frag"
     });
 }
 
@@ -83,7 +85,7 @@ void snp_gfx_clear() {
             glClearColor(r/255, g/255, b/255, 1.f);
         }
     }
-    // rgb value prioritised over hex.
+        // rgb value prioritised over hex.
     else {
         glClearColor(state.win_args.clear_colour.r, state.win_args.clear_colour.g, state.win_args.clear_colour.b, 1.f);
     }
@@ -153,11 +155,11 @@ void snp_texture_apply_quad(snp_texture* texture, snp_quad quad) {
     float halfHeight = texture->quad.h / 2.0f;
 
     float v[32] = {
-            // positions          // colors           // texture coords
-            halfWidth,  halfHeight, 0.0f,    1.0f, 0.0f, 0.0f,   u1, v0,   // top right
-            halfWidth, -halfHeight, 0.0f,    0.0f, 1.0f, 0.0f,   u1, v1,   // bottom right
-            -halfWidth, -halfHeight, 0.0f,   0.0f, 0.0f, 1.0f,   u0, v1,   // bottom left
-            -halfWidth,  halfHeight, 0.0f,   1.0f, 1.0f, 0.0f,   u0, v0    // top left
+            // positions                     // colors           // texture coords
+            halfWidth,  halfHeight, 0.0f,    1.0f, 0.0f, 0.0f,   u1, v1,   // top right
+            halfWidth, -halfHeight, 0.0f,    0.0f, 1.0f, 0.0f,   u1, v0,   // bottom right
+            -halfWidth, -halfHeight, 0.0f,   0.0f, 0.0f, 1.0f,   u0, v0,   // bottom left
+            -halfWidth,  halfHeight, 0.0f,   1.0f, 1.0f, 0.0f,   u0, v1    // top left
     };
 
     memcpy(texture->vertices, v, sizeof(v));
@@ -194,15 +196,12 @@ void snp_texture_updateVBO(snp_texture texture) {
 
 mat4 default_projection;
 
-
 void snp_texture_draw(snp_texture_draw_args args) {
     if (args.quad.w == 0.f) {
         args.quad = (snp_quad){0, 0, args.texture.width, args.texture.height};
     }
     snp_texture_apply_quad(&args.texture, args.quad);
     snp_texture_updateVBO(args.texture);
-
-    glm_ortho(0.0f, state.win_args.width, state.win_args.height, 0.0f, -1.0f, 1.0f, default_projection);
 
     vec2 position = {args.x, args.y};
     mat4 transform;
@@ -214,7 +213,6 @@ void snp_texture_draw(snp_texture_draw_args args) {
     glm_scale(transform, finalScale);
 
     snp_shader_use(state.texture_shader);
-//    snp_shader_set_mat4(state.texture_shader, "projection", default_projection);
     snp_shader_set_mat4(state.texture_shader, "model", transform);
 
     glBindTexture(GL_TEXTURE_2D, args.texture.ID);
@@ -251,10 +249,10 @@ void snp_camera_get_view(snp_camera* camera) {
 void snp_camera_get_proj(snp_camera* camera) {
     float left   = camera->position[0] - (state.win_args.width  / 2.0f) / camera->zoom;
     float right  = camera->position[0] + (state.win_args.width  / 2.0f) / camera->zoom;
-    float top    = camera->position[1] + (state.win_args.height / 2.0f) / camera->zoom;
-    float bottom = camera->position[1] - (state.win_args.height / 2.0f) / camera->zoom;
+    float top    = camera->position[1] - (state.win_args.height / 2.0f) / camera->zoom;
+    float bottom = camera->position[1] + (state.win_args.height / 2.0f) / camera->zoom;
 
-    glm_ortho(left, right, bottom, top, 0.1f, 100.0f, camera->projection);
+    glm_ortho(left, right, bottom, top, -1, 1, camera->projection);
 }
 
 void snp_camera_attach(snp_camera camera) {
@@ -267,9 +265,9 @@ void snp_camera_attach(snp_camera camera) {
 void snp_camera_detach(snp_camera camera) {
     mat4 proj;
     mat4 view;
-    glm_mat4_identity(proj);
     glm_mat4_identity(view);
     // glm_ortho(0.0f, state.width, state.height, 0.0f, -1.0f, 1.0f, proj);
+    glm_ortho(0.0f, state.win_args.width, state.win_args.height, 0.0f, -1.0f, 1.0f, proj);
     snp_shader_set_mat4(state.texture_shader, "projection", proj);
     snp_shader_set_mat4(state.texture_shader, "view", view);
 }
