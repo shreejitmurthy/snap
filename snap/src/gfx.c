@@ -61,7 +61,6 @@ bool snp_gfx_window_open() {
                 break;
         }
     }
-
     return !state.quit;
 }
 
