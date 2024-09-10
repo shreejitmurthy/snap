@@ -194,8 +194,6 @@ void snp_texture_updateVBO(snp_texture texture) {
     glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(texture.vertices), texture.vertices);
 }
 
-mat4 default_projection;
-
 void snp_texture_draw(snp_texture_draw_args args) {
     if (args.quad.w == 0.f) {
         args.quad = (snp_quad){0, 0, args.texture.width, args.texture.height};
@@ -262,11 +260,10 @@ void snp_camera_attach(snp_camera camera) {
     snp_shader_set_mat4(state.texture_shader, "projection", camera.projection);
 }
 
-void snp_camera_detach(snp_camera camera) {
+void snp_camera_detach() {
     mat4 proj;
     mat4 view;
     glm_mat4_identity(view);
-    // glm_ortho(0.0f, state.width, state.height, 0.0f, -1.0f, 1.0f, proj);
     glm_ortho(0.0f, state.win_args.width, state.win_args.height, 0.0f, -1.0f, 1.0f, proj);
     snp_shader_set_mat4(state.texture_shader, "projection", proj);
     snp_shader_set_mat4(state.texture_shader, "view", view);

@@ -77,7 +77,7 @@ void snp_camera_setpos(snp_camera* camera, float x, float y);
 void snp_camera_get_view(snp_camera* camera);
 void snp_camera_get_proj(snp_camera* camera);
 void snp_camera_attach(snp_camera camera);
-void snp_camera_detach(snp_camera camera);
+void snp_camera_detach();
 
 #ifdef __cplusplus
 }
