@@ -130,8 +130,6 @@ snp_texture snp_texture_init(const char* path) {
 
     snp_texture_apply_quad(&texture, quad);
 
-    // memcpy(texture.vertices, v, sizeof(v));
-
     unsigned int i[6] = {
             0, 1, 3, // first triangle
             1, 2, 3  // second triangle
