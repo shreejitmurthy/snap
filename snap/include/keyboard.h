@@ -7,6 +7,11 @@
 #include <stdbool.h>
 #include <SDL3/SDL.h>
 
+#ifdef __cplusplus
+extern "C"
+{
+#endif
+
 bool KEYS[322];
 
 extern const uint32_t SNPK_ESCAPE;
@@ -65,4 +70,6 @@ void snp_keyboard_init();
 void snp_keyboard_process(SDL_Event event);
 bool snp_keyboard_down(uint32_t key);
 
-
+#ifdef __cplusplus
+}
+#endif
