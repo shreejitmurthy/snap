@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "shader.h"
+#include "vec2.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -38,7 +39,7 @@ typedef struct {
 
 typedef struct {
     snp_texture texture;
-    float x, y;
+    snp_vec2 position;
     snp_quad quad;
     float sx, sy;
 } snp_texture_draw_args;
@@ -55,9 +56,9 @@ struct {
     snp_window_args win_args;
     SDL_Window* window;
     SDL_GLContext context;
-    bool quit;
+    bool window_open;
     snp_shader texture_shader;
-} state;
+} snp_app_state;
 
 void snp_gfx_init(snp_window_args args);
 bool snp_gfx_window_open();
@@ -73,7 +74,7 @@ void snp_texture_draw(snp_texture_draw_args args);
 void snp_texture_delete(snp_texture texture);
 
 snp_camera snp_camera_init();
-void snp_camera_setpos(snp_camera* camera, float x, float y);
+void snp_camera_setpos(snp_camera* camera, snp_vec2 position);
 void snp_camera_get_view(snp_camera* camera);
 void snp_camera_get_proj(snp_camera* camera);
 void snp_camera_attach(snp_camera camera);
