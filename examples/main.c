@@ -16,7 +16,7 @@ int main() {
     snp_vec2 player_position = {400, 300};
 
     snp_camera camera = snp_camera_init();
-    camera.zoom = 2.0f;
+    camera.zoom = 1.5f;
     snp_camera_setpos(&camera, player_position);
 
     snp_texture knight = snp_texture_init("../examples/knight.png");
@@ -26,35 +26,32 @@ int main() {
 
     snp_texture health_bar = snp_texture_init("../examples/healthbar.png");
 
+    snp_clock clock = snp_clock_init();
+
     while (snp_gfx_window_open()) {
         snp_gfx_clear();
+        snp_clock_tick(&clock);
+        double dt = snp_clock_get_delta(clock);
 
         if (snp_keyboard_down(SNPK_ESCAPE)) {
             snp_app_state.window_open = false;
         }
 
         if (snp_keyboard_down(SNPK_A)) {
-            player_position.x -= 1.f;
+            player_position.x -= 100.f * dt;
         } else if (snp_keyboard_down(SNPK_D)) {
-            player_position.x += 1.f;
+            player_position.x += 100.f * dt;
         }
 
         if (snp_keyboard_down(SNPK_W)) {
-            player_position.y -= 1.f;
+            player_position.y -= 100.f * dt;
         } else if (snp_keyboard_down(SNPK_S)) {
-            player_position.y += 1.f;
+            player_position.y += 100.f * dt;
         }
 
         snp_camera_setpos(&camera, player_position);
 
         snp_camera_attach(camera);
-
-
-        snp_texture_draw((snp_texture_draw_args){
-                .texture = player_spritesheet,
-                .quad = player_quad,
-                .position = player_position
-        });
 
         snp_texture_draw((snp_texture_draw_args){
                 .texture = knight,
@@ -67,6 +64,12 @@ int main() {
                 .quad = kangaroo_quad,
                 .position = {500, 400},
                 .sx = 2, .sy = 2
+        });
+
+        snp_texture_draw((snp_texture_draw_args){
+                .texture = player_spritesheet,
+                .quad = player_quad,
+                .position = player_position
         });
 
         snp_camera_detach();
