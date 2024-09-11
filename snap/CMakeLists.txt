@@ -10,6 +10,7 @@ add_subdirectory(vendor/cglm)
 
 set(ENGINE_SOURCES src/gfx.c src/shader.c
         src/keyboard.c
+        src/clock.c
 )
 add_library(libsnap STATIC ${ENGINE_SOURCES} vendor/glad/glad.c)
 
