@@ -22,6 +22,7 @@ void snp_gfx_init(snp_window_args args) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
+
     snp_app_state.win_args = args;
     snp_app_state.window_open = true;
     snp_app_state.window = SDL_CreateWindow(snp_app_state.win_args.title, snp_app_state.win_args.width, snp_app_state.win_args.height, SDL_WINDOW_OPENGL);
@@ -30,11 +31,11 @@ void snp_gfx_init(snp_window_args args) {
     snp_app_state.context = SDL_GL_CreateContext(snp_app_state.window);
     assert(snp_app_state.context);
 
-    SDL_GL_SetSwapInterval(1);
-
     if (gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress) == 0) {
         fprintf(stderr, "Failed to load GLAD\n");
     }
+
+    SDL_GL_SetSwapInterval(1);
 
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
