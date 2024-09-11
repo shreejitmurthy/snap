@@ -3,6 +3,7 @@
 #include <glad/glad.h>
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
+#include "keyboard.h"
 
 /* _________
    \_   ___ \  ___________   ____
@@ -35,8 +36,6 @@ void snp_gfx_init(snp_window_args args) {
         fprintf(stderr, "Failed to load GLAD\n");
     }
 
-//    stbi_set_flip_vertically_on_load(true);
-
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
     glViewport(0, 0, state.win_args.width, state.win_args.height);
@@ -49,18 +48,23 @@ void snp_gfx_init(snp_window_args args) {
 
 bool snp_gfx_window_open() {
     SDL_Event event;
+
     while (SDL_PollEvent(&event)) {
-        switch(event.type) {
+        switch (event.type) {
             case SDL_EVENT_QUIT:
                 state.quit = true;
                 break;
+
             case SDL_EVENT_KEY_DOWN:
-                if (event.key.key == SDLK_ESCAPE) {
-                    state.quit = true;
-                }
+            case SDL_EVENT_KEY_UP:
+                snp_keyboard_process(event);
+                break;
+
+            default:
                 break;
         }
     }
+
     return !state.quit;
 }
 
