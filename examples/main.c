@@ -2,12 +2,14 @@
 #include "snap.h"
 
 int main() {
-    snp_gfx_init((snp_window_args){
+    snp_window_args args = {
             .title = "Window",
             .width = 800,
             .height = 600,
             .clear_colour.hex = 0x334d4d
-    });
+    };
+
+    system_init(args);
 
     snp_camera camera = snp_camera_init();
     camera.zoom = 1.0f;
@@ -23,6 +25,10 @@ int main() {
 
     while (snp_gfx_window_open()) {
         snp_gfx_clear();
+
+        if (snp_keyboard_down(SNPK_ESCAPE)) {
+            state.quit = true;
+        }
 
         snp_camera_attach(camera);
 
