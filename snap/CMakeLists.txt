@@ -8,7 +8,9 @@ include_directories(vendor)
 add_subdirectory(vendor/SDL)
 add_subdirectory(vendor/cglm)
 
-set(ENGINE_SOURCES src/gfx.c src/shader.c)
+set(ENGINE_SOURCES src/gfx.c src/shader.c
+        src/keyboard.c
+)
 add_library(libsnap STATIC ${ENGINE_SOURCES} vendor/glad/glad.c)
 
 find_package(OpenGL REQUIRED)
