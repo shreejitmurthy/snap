@@ -9,8 +9,14 @@ extern "C"
 {
 #endif
 
+#include "keyboard.h"
 #include "gfx.h"
 #include "shader.h"
+
+    void system_init(snp_window_args win_args) {
+        snp_gfx_init(win_args);
+        snp_keyboard_init();
+    }
 
 #ifdef __cplusplus
 }
