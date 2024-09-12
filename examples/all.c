@@ -9,7 +9,7 @@ int main() {
             .clear_colour.hex = 0x334d4d
     };
 
-    system_init(args);
+    snp_system_init(args);
 
     snp_texture player_spritesheet = snp_texture_init("../examples/player.png");
     snp_quad player_quad = (snp_quad){0, 0, 64, 64};
@@ -51,7 +51,7 @@ int main() {
 
         snp_camera_setpos(&camera, player_position);
 
-        snp_camera_attach(camera);
+        snp_camera_attach(camera);  // Attach the camera
 
         snp_texture_draw((snp_texture_draw_args){
                 .texture = knight,
@@ -72,8 +72,9 @@ int main() {
                 .position = player_position
         });
 
-        snp_camera_detach();
+        snp_camera_detach();  // Detach the camera, everything drawn within the attach/detach zone are 'in the world'
 
+        // Health bar UI to be drawn over the top, not 'in the world'
         snp_texture_draw((snp_texture_draw_args){
                 .texture = health_bar,
                 .position = {75, 25},
@@ -83,7 +84,11 @@ int main() {
         snp_gfx_refresh();
     }
 
+    // Delete textures.
     snp_texture_delete(player_spritesheet);
+    snp_texture_delete(knight);
+    snp_texture_delete(animals);
+    snp_texture_delete(health_bar);
 
     snp_gfx_destroy();
     return 0;
