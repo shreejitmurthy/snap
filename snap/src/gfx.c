@@ -22,7 +22,6 @@ void snp_gfx_init(snp_window_args args) {
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);
     SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 
-
     snp_app_state.win_args = args;
     snp_app_state.window_open = true;
     snp_app_state.window = SDL_CreateWindow(snp_app_state.win_args.title, snp_app_state.win_args.width, snp_app_state.win_args.height, SDL_WINDOW_OPENGL);
@@ -78,7 +77,7 @@ void snp_gfx_clear() {
     if (snp_app_state.win_args.clear_colour.r == 0 && snp_app_state.win_args.clear_colour.g == 0 && snp_app_state.win_args.clear_colour.b == 0) {
         // check if hex value is zero/undefined
         if (snp_app_state.win_args.clear_colour.hex == 0x00000000) {
-            glClearColor(0.f, 0.f, 0.f, 0.f);
+            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         }
             // rgb value zero/undefined, hex value non-zero/defined
         else {
@@ -86,12 +85,12 @@ void snp_gfx_clear() {
             float g = (snp_app_state.win_args.clear_colour.hex >> 8) & 0xFF;
             float b = snp_app_state.win_args.clear_colour.hex & 0xFF;
 
-            glClearColor(r/255, g/255, b/255, 1.f);
+            glClearColor(r/255, g/255, b/255, 1.0f);
         }
     }
         // rgb value prioritised over hex.
     else {
-        glClearColor(snp_app_state.win_args.clear_colour.r, snp_app_state.win_args.clear_colour.g, snp_app_state.win_args.clear_colour.b, 1.f);
+        glClearColor(snp_app_state.win_args.clear_colour.r, snp_app_state.win_args.clear_colour.g, snp_app_state.win_args.clear_colour.b, 1.0f);
     }
 
     glClear(GL_COLOR_BUFFER_BIT);
@@ -135,8 +134,8 @@ snp_texture snp_texture_init(const char* path) {
     snp_texture_apply_quad(&texture, quad);
 
     unsigned int i[6] = {
-            0, 1, 3, // first triangle
-            1, 2, 3  // second triangle
+            0, 1, 3,  // first triangle
+            1, 2, 3   // second triangle
     };
 
     memcpy(texture.indices, i, sizeof(i));
@@ -153,15 +152,15 @@ void snp_texture_apply_quad(snp_texture* texture, snp_quad quad) {
     float u1 = (texture->quad.x + texture->quad.w) / texture->width;
     float v1 = (texture->quad.y + texture->quad.h) / texture->height;
 
-    float halfWidth = texture->quad.w / 2.0f;
+    float halfWidth  = texture->quad.w / 2.0f;
     float halfHeight = texture->quad.h / 2.0f;
 
     float v[32] = {
-            // positions                     // colors           // texture coords
-            halfWidth,  halfHeight, 0.0f,    1.0f, 0.0f, 0.0f,   u1, v1,   // top right
-            halfWidth, -halfHeight, 0.0f,    0.0f, 1.0f, 0.0f,   u1, v0,   // bottom right
-            -halfWidth, -halfHeight, 0.0f,   0.0f, 0.0f, 1.0f,   u0, v0,   // bottom left
-            -halfWidth,  halfHeight, 0.0f,   1.0f, 1.0f, 0.0f,   u0, v1    // top left
+            // positions                       colors              texture coords
+             halfWidth,  halfHeight,   0.0f,   1.0f, 0.0f, 0.0f,   u1, v1,  // top right
+             halfWidth, -halfHeight,   0.0f,   0.0f, 1.0f, 0.0f,   u1, v0,  // bottom right
+            -halfWidth, -halfHeight,   0.0f,   0.0f, 0.0f, 1.0f,   u0, v0,  // bottom left
+            -halfWidth,  halfHeight,   0.0f,   1.0f, 1.0f, 0.0f,   u0, v1   // top left
     };
 
     memcpy(texture->vertices, v, sizeof(v));
@@ -197,23 +196,23 @@ void snp_texture_updateVBO(snp_texture texture) {
 }
 
 void snp_texture_draw(snp_texture_draw_args args) {
-    if (args.quad.w == 0.f) {
+    if (args.quad.w == 0.0f) {
         args.quad = (snp_quad){0, 0, args.texture.width, args.texture.height};
     }
     snp_texture_apply_quad(&args.texture, args.quad);
     snp_texture_updateVBO(args.texture);
 
     vec2 position = {args.position.x, args.position.y};
-    mat4 transform;
-    glm_mat4_identity(transform);
+    mat4 model;
+    glm_mat4_identity(model);
 
     vec3 translation = {position[0], position[1], 0.0f};
-    glm_translate(transform, translation);
+    glm_translate(model, translation);
     vec3 finalScale = {args.sx == 0 ? 1.0f : args.sx, args.sy == 0 ? 1.0f : args.sy, 1.0f};
-    glm_scale(transform, finalScale);
+    glm_scale(model, finalScale);
 
     snp_shader_use(snp_app_state.texture_shader);
-    snp_shader_set_mat4(snp_app_state.texture_shader, "model", transform);
+    snp_shader_set_mat4(snp_app_state.texture_shader, "model", model);
 
     glBindTexture(GL_TEXTURE_2D, args.texture.ID);
     glBindVertexArray(args.texture.VAO);
@@ -229,7 +228,7 @@ snp_camera snp_camera_init() {
     snp_camera camera;
     glm_mat4_zero(camera.projection);
     glm_mat4_zero(camera.view);
-    camera.zoom = 1.f;
+    camera.zoom = 1.0f;
     glm_vec2_zero(camera.position);
     return camera;
 }
@@ -252,7 +251,7 @@ void snp_camera_get_proj(snp_camera* camera) {
     float top    = camera->position[1] - (snp_app_state.win_args.height / 2.0f) / camera->zoom;
     float bottom = camera->position[1] + (snp_app_state.win_args.height / 2.0f) / camera->zoom;
 
-    glm_ortho(left, right, bottom, top, -1, 1, camera->projection);
+    glm_ortho(left, right, bottom, top, -1.0f, 1.0f, camera->projection);
 }
 
 void snp_camera_attach(snp_camera camera) {
