@@ -2,15 +2,18 @@
 #include "snap.h"
 
 int main() {
+    // Create the window's specifics
     snp_window_args args = {
             .title = "Window",
             .width = 800,
             .height = 600,
-            .clear_colour.hex = 0x334d4d
+            .clear_colour = snp_hex_to_rgba(0x334d4d)  // Teal colour
     };
 
+    // Initialise the system with the window arguments
     snp_system_init(args);
 
+    // Create player sprite, with its own quad
     snp_texture player_spritesheet = snp_texture_init("../examples/player.png");
     snp_quad player_quad = (snp_quad){0, 0, 64, 64};
     snp_vec2 player_position = {400, 300};
@@ -26,10 +29,13 @@ int main() {
 
     snp_texture health_bar = snp_texture_init("../examples/healthbar.png");
 
+    // Create a (very basic) clock.
     snp_clock clock = snp_clock_init();
 
     while (snp_gfx_window_open()) {
         snp_gfx_clear();
+
+        // Tick (update) the clock and get the time between frames (delta time)
         snp_clock_tick(&clock);
         double dt = snp_clock_get_delta(clock);
 
@@ -37,6 +43,7 @@ int main() {
             snp_app_state.window_open = false;
         }
 
+        // Update player position with keyboard
         if (snp_keyboard_down(SNPK_A)) {
             player_position.x -= 100.f * dt;
         } else if (snp_keyboard_down(SNPK_D)) {
@@ -66,6 +73,8 @@ int main() {
                 .sx = 2, .sy = 2
         });
 
+        // Draw the player last to ensure it's on top.
+        // - also draw with quad to only get a portion of the image
         snp_texture_draw((snp_texture_draw_args){
                 .texture = player_spritesheet,
                 .quad = player_quad,
