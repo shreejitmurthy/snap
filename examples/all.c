@@ -66,11 +66,13 @@ int main() {
                 .sx = 2, .sy = 2
         });
 
+        // Tint the kangaroo green
         snp_texture_draw((snp_texture_draw_args){
                 .texture = animals,
                 .quad = kangaroo_quad,
                 .position = {500, 400},
-                .sx = 2, .sy = 2
+                .sx = 2, .sy = 2,
+                .tint = (snp_colour){0.f, 1.f, 0.f, 1.f}
         });
 
         // Draw the player last to ensure it's on top.
@@ -78,7 +80,7 @@ int main() {
         snp_texture_draw((snp_texture_draw_args){
                 .texture = player_spritesheet,
                 .quad = player_quad,
-                .position = player_position
+                .position = player_position,
         });
 
         snp_camera_detach();  // Detach the camera, everything drawn within the attach/detach zone are 'in the world'
