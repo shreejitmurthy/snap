@@ -221,11 +221,10 @@ void snp_texture_draw(snp_texture_draw_args args) {
     snp_shader_use(snp_app_state.texture_shader);
     snp_shader_set_mat4(snp_app_state.texture_shader, "model", model);
     vec4 tint;
-    if (is_zero_colour(args.tint)) {
-         glm_vec4_copy((vec4){1.0f, 1.0f, 1.0f, 1.0f}, tint);
-    } else {
-        glm_vec4_copy((vec4){args.tint.r, args.tint.g, args.tint.b, args.tint.a}, tint);
-    }
+    glm_vec4_copy(
+            is_zero_colour(args.tint) ? (vec4){1.0f, 1.0f, 1.0f, 1.0f} : (vec4){args.tint.r, args.tint.g, args.tint.b, args.tint.a},
+            tint
+    );
     snp_shader_set_vec4(snp_app_state.texture_shader, "tint", tint);
 
     glBindTexture(GL_TEXTURE_2D, args.texture.ID);
