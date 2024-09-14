@@ -10,8 +10,9 @@ Snap aims to be a simple and intuitive game framework. While working with C++ in
 ## Usage
 If someone wishes to use this library, for some odd reason, they should look towards the `examples/` folder that contains a CMake build script and example code file for a top-down 2D scene with a camera. It uses open sourced assets.
 
-## Roadmap (TODO):
-- [ ] Image Tinting
+## Roadmap (Things TODO):
+### September 2024
+- [X] Image Tinting
 - [ ] Text Rendering
 - [ ] Shape Rendering
 
