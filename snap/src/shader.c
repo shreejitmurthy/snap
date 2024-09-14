@@ -100,9 +100,9 @@ void snp_shader_set_mat4(snp_shader shader, const char* name, mat4 mat) {
 }
 
 void snp_shader_set_vec3(snp_shader shader, const char* name, vec3 vec) {
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, name), 1, GL_FALSE, (float*)vec);
+    glUniform3f(glGetUniformLocation(shader.ID, name), vec[0], vec[1], vec[2]);
 }
 
 void snp_shader_set_vec4(snp_shader shader, const char* name, vec4 vec) {
-    glUniformMatrix4fv(glGetUniformLocation(shader.ID, name), 1, GL_FALSE, (float*)vec);
+    glUniform4f(glGetUniformLocation(shader.ID, name), vec[0], vec[1], vec[2], vec[3]);
 }
