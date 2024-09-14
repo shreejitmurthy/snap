@@ -98,3 +98,11 @@ void snp_shader_use(snp_shader shader) {
 void snp_shader_set_mat4(snp_shader shader, const char* name, mat4 mat) {
     glUniformMatrix4fv(glGetUniformLocation(shader.ID, name), 1, GL_FALSE, (float*)mat);
 }
+
+void snp_shader_set_vec3(snp_shader shader, const char* name, vec3 vec) {
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, name), 1, GL_FALSE, (float*)vec);
+}
+
+void snp_shader_set_vec4(snp_shader shader, const char* name, vec4 vec) {
+    glUniformMatrix4fv(glGetUniformLocation(shader.ID, name), 1, GL_FALSE, (float*)vec);
+}
