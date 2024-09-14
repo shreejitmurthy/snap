@@ -5,6 +5,15 @@
 #include <stb_image.h>
 #include "keyboard.h"
 
+/*
+   _________        .__
+   \_   ___ \  ____ |  |   ____  __ _________
+   /    \  \/ /  _ \|  |  /  _ \|  |  \_  __ \
+   \     \___(  <_> )  |_(  <_> )  |  /|  | \/
+    \______  /\____/|____/\____/|____/ |__|
+           \/
+ */
+
 snp_colour snp_hex_to_rgba(uint32_t hex) {
     snp_colour colour;
     colour.r = ((hex >> 16) & 0xFF) / 255.0f;
@@ -13,12 +22,18 @@ snp_colour snp_hex_to_rgba(uint32_t hex) {
     return colour;
 }
 
-/* _________
+bool is_zero_colour(snp_colour colour) {
+    return !(colour.r || colour.g || colour.b || colour.a);
+}
+
+/*
+   _________
    \_   ___ \  ___________   ____
    /    \  \/ /  _ \_  __ \_/ __ \
    \     \___(  <_> )  | \/\  ___/
     \______  /\____/|__|    \___  >
-           \/                   \/  */
+           \/                   \/
+ */
 
 void snp_gfx_init(snp_window_args args) {
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
@@ -92,12 +107,14 @@ void snp_gfx_destroy() {
     SDL_Quit();
 }
 
-/* ___________              __
+/*
+   ___________              __
    \__    ___/___ ___  ____/  |_ __ _________   ____
      |    |_/ __ \\  \/  /\   __\  |  \_  __ \_/ __ \
      |    |\  ___/ >    <  |  | |  |  /|  | \/\  ___/
      |____| \___  >__/\_ \ |__| |____/ |__|    \___  >
-                \/      \/                         \/  */
+                \/      \/                         \/
+ */
 
 snp_texture snp_texture_init(const char* path) {
     snp_texture texture;
@@ -215,6 +232,15 @@ void snp_texture_draw(snp_texture_draw_args args) {
 void snp_texture_delete(snp_texture texture) {
     glDeleteTextures(1, &texture.ID);
 }
+
+/*
+   _________
+   \_   ___ \_____    _____   ________________
+   /    \  \/\__  \  /     \_/ __ \_  __ \__  \
+   \     \____/ __ \|  Y Y  \  ___/|  | \// __ \_
+    \______  (____  /__|_|  /\___  >__|  (____  /
+           \/     \/      \/     \/           \/
+ */
 
 snp_camera snp_camera_init() {
     snp_camera camera;
