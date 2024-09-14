@@ -5,6 +5,14 @@
 #include <stb_image.h>
 #include "keyboard.h"
 
+snp_colour snp_hex_to_rgba(uint32_t hex) {
+    snp_colour colour;
+    colour.r = ((hex >> 16) & 0xFF) / 255.0f;
+    colour.g = ((hex >> 8) & 0xFF) / 255.0f;
+    colour.b = (hex & 0xFF) / 255.0f;
+    return colour;
+}
+
 /* _________
    \_   ___ \  ___________   ____
    /    \  \/ /  _ \_  __ \_/ __ \
@@ -73,25 +81,7 @@ void snp_gfx_refresh() {
 }
 
 void snp_gfx_clear() {
-    // check if rgb values are zero/undefined
-    if (snp_app_state.win_args.clear_colour.r == 0 && snp_app_state.win_args.clear_colour.g == 0 && snp_app_state.win_args.clear_colour.b == 0) {
-        // check if hex value is zero/undefined
-        if (snp_app_state.win_args.clear_colour.hex == 0x00000000) {
-            glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
-        }
-            // rgb value zero/undefined, hex value non-zero/defined
-        else {
-            float r = (snp_app_state.win_args.clear_colour.hex >> 16) & 0xFF;
-            float g = (snp_app_state.win_args.clear_colour.hex >> 8) & 0xFF;
-            float b = snp_app_state.win_args.clear_colour.hex & 0xFF;
-
-            glClearColor(r/255, g/255, b/255, 1.0f);
-        }
-    }
-        // rgb value prioritised over hex.
-    else {
-        glClearColor(snp_app_state.win_args.clear_colour.r, snp_app_state.win_args.clear_colour.g, snp_app_state.win_args.clear_colour.b, 1.0f);
-    }
+    glClearColor(snp_app_state.win_args.clear_colour.r, snp_app_state.win_args.clear_colour.g, snp_app_state.win_args.clear_colour.b, 1.0f);
 
     glClear(GL_COLOR_BUFFER_BIT);
 }
@@ -213,6 +203,8 @@ void snp_texture_draw(snp_texture_draw_args args) {
 
     snp_shader_use(snp_app_state.texture_shader);
     snp_shader_set_mat4(snp_app_state.texture_shader, "model", model);
+    vec4 tint = {1.0f, 1.0f, 1.0f, 1.0f};
+    snp_shader_set_vec4(snp_app_state.texture_shader, "tint", tint);
 
     glBindTexture(GL_TEXTURE_2D, args.texture.ID);
     glBindVertexArray(args.texture.VAO);

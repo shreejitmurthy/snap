@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "shader.h"
-#include "vec2.h"
+#include "vec.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -14,8 +14,9 @@ extern "C"
 
 typedef struct {
     float r, g, b, a;
-    uint32_t hex;
 } snp_colour;  // with a 'u'!
+
+snp_colour snp_hex_to_rgba(uint32_t hex);
 
 typedef struct {
     const char* title;
@@ -42,6 +43,7 @@ typedef struct {
     snp_vec2 position;
     snp_quad quad;
     float sx, sy;
+    snp_colour tint;
 } snp_texture_draw_args;
 
 typedef struct {
