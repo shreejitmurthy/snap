@@ -4,3 +4,6 @@
 [submodule "snap/vendor/cglm"]
 	path = snap/vendor/cglm
 	url = https://github.com/recp/cglm.git
+[submodule "snap/vendor/log"]
+	path = snap/vendor/log
+	url = https://github.com/rxi/log.c.git
