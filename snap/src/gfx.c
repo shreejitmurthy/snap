@@ -163,17 +163,18 @@ void snp_texture_apply_quad(snp_texture* texture, snp_quad quad) {
     float halfHeight = texture->quad.h / 2.0f;
 
     float v[32] = {
-            // positions                       colors              texture coords
-             halfWidth,  halfHeight,   0.0f,   1.0f, 0.0f, 0.0f,   u1, v1,  // top right
-             halfWidth, -halfHeight,   0.0f,   0.0f, 1.0f, 0.0f,   u1, v0,  // bottom right
-            -halfWidth, -halfHeight,   0.0f,   0.0f, 0.0f, 1.0f,   u0, v0,  // bottom left
-            -halfWidth,  halfHeight,   0.0f,   1.0f, 1.0f, 0.0f,   u0, v1   // top left
+            // positions    // texture coords  // colors
+            halfWidth,  halfHeight, u1, v1,    1.0f, 0.0f, 0.0f,  // top right
+            halfWidth, -halfHeight, u1, v0,    0.0f, 1.0f, 0.0f,  // bottom right
+            -halfWidth, -halfHeight, u0, v0,    0.0f, 0.0f, 1.0f,  // bottom left
+            -halfWidth,  halfHeight, u0, v1,    1.0f, 1.0f, 0.0f   // top left
     };
 
     memcpy(texture->vertices, v, sizeof(v));
 }
 
 void snp_texture_gen_buffers(snp_texture* texture) {
+    // Generate and bind VAO, VBO, and EBO
     glGenVertexArrays(1, &texture->VAO);
     glGenBuffers(1, &texture->VBO);
     glGenBuffers(1, &texture->EBO);
@@ -186,15 +187,14 @@ void snp_texture_gen_buffers(snp_texture* texture) {
     glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, texture->EBO);
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(texture->indices), texture->indices, GL_STATIC_DRAW);
 
-    // position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 4, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
-    // color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 7 * sizeof(float), (void*)(4 * sizeof(float)));
     glEnableVertexAttribArray(1);
-    // texture coord attribute
-    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-    glEnableVertexAttribArray(2);
+
+    glBindVertexArray(0);
+
 }
 
 void snp_texture_updateVBO(snp_texture texture) {
