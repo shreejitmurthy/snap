@@ -22,6 +22,7 @@ typedef struct {
     const char* title;
     int width, height;
     snp_colour clear_colour;
+    bool log;
 } snp_window_args;
 
 typedef struct {
