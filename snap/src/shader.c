@@ -4,10 +4,8 @@
 
 #include "shader.h"
 #include <glad/glad.h>
-#include <stdlib.h>
-#include <string.h>
-#include <stdio.h>
 #include <SDL3/SDL_iostream.h>
+#include <log/log.h>
 
 void checkCompileErrors(unsigned int shader, const char* type) {
     int success;
@@ -16,13 +14,13 @@ void checkCompileErrors(unsigned int shader, const char* type) {
         glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
         if (!success) {
             glGetShaderInfoLog(shader, 1024, NULL, infoLog);
-            fprintf(stderr, "ERROR::SHADER_COMPILATION_ERROR of type: %s\n%s\n -- --------------------------------------------------- -- \n", type, infoLog);
+            log_error("SNP::Shader compilation error of type: %s, %s", type, infoLog);
         }
     } else {
         glGetProgramiv(shader, GL_LINK_STATUS, &success);
         if (!success) {
             glGetProgramInfoLog(shader, 1024, NULL, infoLog);
-            fprintf(stderr, "ERROR::PROGRAM_LINKING_ERROR of type: %s\n%s\n -- --------------------------------------------------- -- \n", type, infoLog);
+            log_error("SNP::Shader program linking error of type: %s, %s", type, infoLog);
         }
     }
 }
@@ -32,14 +30,14 @@ char* readFile(const char* filePath) {
         // Open the file
         SDL_IOStream* io = SDL_IOFromFile(filePath, "rb");
         if (io == NULL) {
-            fprintf(stderr, "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: %s\n", filePath);
+            log_error("SNP::Shader file unsuccessfully read: %s", filePath);
             return NULL;
         }
 
         // Get the length of the file
         Sint64 length = SDL_GetIOSize(io);
         if (length < 0) {
-            fprintf(stderr, "ERROR::SDL_IOStream::FILE_SIZE_ERROR\n");
+            log_error("SNP::SDL_IOStream file size error");
             SDL_CloseIO(io);
             return NULL;
         }
@@ -47,7 +45,7 @@ char* readFile(const char* filePath) {
         // Allocate memory to read the file content
         char* content = (char*)malloc(length + 1);
         if (content == NULL) {
-            fprintf(stderr, "ERROR::SHADER::MEMORY_ALLOCATION_FAILED\n");
+            log_error("SNP::Shader memory allocation failed");
             SDL_CloseIO(io);
             return NULL;
         }
@@ -55,7 +53,7 @@ char* readFile(const char* filePath) {
         // Read the file content
         Sint64 bytesRead = SDL_ReadIO(io, content, length);
         if (bytesRead != length) {
-            fprintf(stderr, "ERROR::SDL_IOStream::READ_ERROR\n");
+            log_error("SNP::SDL_IOStream file read error");
             free(content);
             SDL_CloseIO(io);
             return NULL;

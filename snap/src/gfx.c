@@ -4,6 +4,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include "keyboard.h"
+#include <log/log.h>
 
 /*
    _________        .__
@@ -36,8 +37,9 @@ bool is_zero_colour(snp_colour colour) {
  */
 
 void snp_gfx_init(snp_window_args args) {
+    log_set_quiet(!args.log);
     if (!SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO)) {
-        fprintf(stderr, "%s\n", SDL_GetError());
+        log_error("SNP::Initialise Error: %s", SDL_GetError());
         exit(1);
     }
 
@@ -54,7 +56,7 @@ void snp_gfx_init(snp_window_args args) {
     assert(snp_app_state.context);
 
     if (gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress) == 0) {
-        fprintf(stderr, "Failed to load GLAD\n");
+        log_error("SNP::Failed to initialise GLAD");
     }
 
     SDL_GL_SetSwapInterval(1);
@@ -67,6 +69,8 @@ void snp_gfx_init(snp_window_args args) {
             .vertex_path = "../snap/shaders/texture.vert",
             .fragment_path = "../snap/shaders/texture.frag"
     });
+
+    log_info("SNP::Initialised GFX");
 }
 
 bool snp_gfx_window_open() {
@@ -104,7 +108,9 @@ void snp_gfx_clear() {
 void snp_gfx_destroy() {
     SDL_GL_DestroyContext(snp_app_state.context);
     SDL_DestroyWindow(snp_app_state.window);
+    log_info("SNP::Destroyed GFX");
     SDL_Quit();
+    log_info("SNP::Goodbye!");
 }
 
 /*
@@ -133,7 +139,7 @@ snp_texture snp_texture_init(const char* path) {
         glGenerateMipmap(GL_TEXTURE_2D);
         stbi_image_free(data);
     } else {
-        fprintf(stderr, "Failed to load texture");
+        log_error("SNP::Failed to load texture at %s", path);
     }
 
     snp_quad quad = (snp_quad){0, 0, (float)texture.width, (float)texture.height};
@@ -149,6 +155,8 @@ snp_texture snp_texture_init(const char* path) {
 
     snp_texture_gen_buffers(&texture);
 
+    log_info("SNP::Loaded texture at %s", path);
+
     return texture;
 }
 
@@ -163,11 +171,11 @@ void snp_texture_apply_quad(snp_texture* texture, snp_quad quad) {
     float halfHeight = texture->quad.h / 2.0f;
 
     float v[32] = {
-            // positions    // texture coords  // colors
-            halfWidth,  halfHeight, u1, v1,    1.0f, 0.0f, 0.0f,  // top right
-            halfWidth, -halfHeight, u1, v0,    0.0f, 1.0f, 0.0f,  // bottom right
-            -halfWidth, -halfHeight, u0, v0,    0.0f, 0.0f, 1.0f,  // bottom left
-            -halfWidth,  halfHeight, u0, v1,    1.0f, 1.0f, 0.0f   // top left
+            /*     positions         tx coords        colors     */
+            halfWidth,  halfHeight,   u1, v1,    1.0f, 0.0f, 0.0f,  // top right
+            halfWidth,  -halfHeight,  u1, v0,    0.0f, 1.0f, 0.0f,  // bottom right
+            -halfWidth, -halfHeight,  u0, v0,    0.0f, 0.0f, 1.0f,  // bottom left
+            -halfWidth, halfHeight,   u0, v1,    1.0f, 1.0f, 0.0f   // top left
     };
 
     memcpy(texture->vertices, v, sizeof(v));
@@ -252,6 +260,7 @@ snp_camera snp_camera_init() {
     glm_mat4_zero(camera.view);
     camera.zoom = 1.0f;
     glm_vec2_zero(camera.position);
+    log_info("SNP::Initialised camera");
     return camera;
 }
 

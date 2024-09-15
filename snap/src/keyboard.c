@@ -4,6 +4,7 @@
 
 #include "keyboard.h"
 #include <SDL3/SDL_keycode.h>
+#include <log/log.h>
 
 const uint32_t SNPK_ESCAPE  =  SDLK_ESCAPE;
 const uint32_t SNPK_0       =  SDLK_0;
@@ -62,6 +63,7 @@ void snp_keyboard_init() {
     for(int i = 0; i < 322; i++) {  // init them all to false
         KEYS[i] = false;
     }
+    log_info("SNP::Initialised keyboard");
 }
 
 void snp_keyboard_process(SDL_Event event) {
