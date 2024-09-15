@@ -5,7 +5,7 @@
 #include "shader.h"
 #include <glad/glad.h>
 #include <SDL3/SDL_iostream.h>
-#include <log/log.h>
+#include <log/src/log.h>
 
 void checkCompileErrors(unsigned int shader, const char* type) {
     int success;
