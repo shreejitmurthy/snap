@@ -7,6 +7,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdio.h>
+#include <SDL3/SDL_iostream.h>
 
 void checkCompileErrors(unsigned int shader, const char* type) {
     int success;
@@ -28,23 +29,42 @@ void checkCompileErrors(unsigned int shader, const char* type) {
 
 char* readFile(const char* filePath) {
     if (filePath != NULL) {
-        FILE* file = fopen(filePath, "rb");
-        if (!file) {
+        // Open the file
+        SDL_IOStream* io = SDL_IOFromFile(filePath, "rb");
+        if (io == NULL) {
             fprintf(stderr, "ERROR::SHADER::FILE_NOT_SUCCESSFULLY_READ: %s\n", filePath);
             return NULL;
         }
 
-        fseek(file, 0, SEEK_END);
-        long length = ftell(file);
-        fseek(file, 0, SEEK_SET);
-
-        char* content = (char*)malloc(length + 1);
-        if (content) {
-            fread(content, 1, length, file);
-            content[length] = '\0';
+        // Get the length of the file
+        Sint64 length = SDL_GetIOSize(io);
+        if (length < 0) {
+            fprintf(stderr, "ERROR::SDL_IOStream::FILE_SIZE_ERROR\n");
+            SDL_CloseIO(io);
+            return NULL;
         }
 
-        fclose(file);
+        // Allocate memory to read the file content
+        char* content = (char*)malloc(length + 1);
+        if (content == NULL) {
+            fprintf(stderr, "ERROR::SHADER::MEMORY_ALLOCATION_FAILED\n");
+            SDL_CloseIO(io);
+            return NULL;
+        }
+
+        // Read the file content
+        Sint64 bytesRead = SDL_ReadIO(io, content, length);
+        if (bytesRead != length) {
+            fprintf(stderr, "ERROR::SDL_IOStream::READ_ERROR\n");
+            free(content);
+            SDL_CloseIO(io);
+            return NULL;
+        }
+
+        // Null-terminate the content
+        content[length] = '\0';
+
+        SDL_CloseIO(io);
         return content;
     } else {
         return NULL;
