@@ -7,7 +7,8 @@ int main() {
             .title = "Window",
             .width = 800,
             .height = 600,
-            .clear_colour = snp_hex_to_rgba(0x334d4d)  // Teal colour
+            .clear_colour = snp_hex_to_rgba(0x334d4d),  // Teal colour
+            .log = true  // Enable the logger
     };
 
     // Initialise the system with the window arguments
