@@ -4,7 +4,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
 #include "keyboard.h"
-#include <log/src/log.h>
+#include <log/log.h>
 
 /*
    _________        .__

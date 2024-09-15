@@ -4,7 +4,7 @@
 
 #include "keyboard.h"
 #include <SDL3/SDL_keycode.h>
-#include <log/src/log.h>
+#include <log/log.h>
 
 const uint32_t SNPK_ESCAPE  =  SDLK_ESCAPE;
 const uint32_t SNPK_0       =  SDLK_0;
