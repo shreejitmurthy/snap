@@ -57,6 +57,10 @@ const uint32_t SNPK_F11     =  SDLK_F11;
 const uint32_t SNPK_F12     =  SDLK_F12;
 const uint32_t SNPK_TAB     =  SDLK_TAB;
 const uint32_t SNPK_SPACE   =  SDLK_SPACE;
+const uint32_t SNPK_LEFT    =  SDLK_LEFT;
+const uint32_t SNPK_RIGHT   =  SDLK_RIGHT;
+const uint32_t SNPK_UP      =  SDLK_UP;
+const uint32_t SNPK_DOWN    =  SDLK_DOWN;
 
 
 void snp_keyboard_init() {
