@@ -57,8 +57,8 @@ typedef struct {
 
 struct {
     snp_window_args win_args;
-    SDL_Window* window;
-    SDL_GLContext context;
+    SDL_Window* win;
+    SDL_GLContext ctx;
     bool window_open;
     snp_shader texture_shader;
 } snp_app_state;

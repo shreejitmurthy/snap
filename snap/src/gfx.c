@@ -49,11 +49,11 @@ void snp_gfx_init(snp_window_args args) {
 
     snp_app_state.win_args = args;
     snp_app_state.window_open = true;
-    snp_app_state.window = SDL_CreateWindow(snp_app_state.win_args.title, snp_app_state.win_args.width, snp_app_state.win_args.height, SDL_WINDOW_OPENGL);
-    assert(snp_app_state.window);
+    snp_app_state.win = SDL_CreateWindow(snp_app_state.win_args.title, snp_app_state.win_args.width, snp_app_state.win_args.height, SDL_WINDOW_OPENGL);
+    assert(snp_app_state.win);
 
-    snp_app_state.context = SDL_GL_CreateContext(snp_app_state.window);
-    assert(snp_app_state.context);
+    snp_app_state.ctx = SDL_GL_CreateContext(snp_app_state.win);
+    assert(snp_app_state.ctx);
 
     if (gladLoadGLLoader((GLADloadproc)SDL_GL_GetProcAddress) == 0) {
         log_error("SNP::Failed to initialise GLAD");
@@ -96,7 +96,7 @@ bool snp_gfx_window_open() {
 }
 
 void snp_gfx_refresh() {
-    SDL_GL_SwapWindow(snp_app_state.window);
+    SDL_GL_SwapWindow(snp_app_state.win);
 }
 
 void snp_gfx_clear() {
@@ -106,8 +106,8 @@ void snp_gfx_clear() {
 }
 
 void snp_gfx_destroy() {
-    SDL_GL_DestroyContext(snp_app_state.context);
-    SDL_DestroyWindow(snp_app_state.window);
+    SDL_GL_DestroyContext(snp_app_state.ctx);
+    SDL_DestroyWindow(snp_app_state.win);
     log_info("SNP::Destroyed GFX");
     SDL_Quit();
     log_info("SNP::Goodbye!");
