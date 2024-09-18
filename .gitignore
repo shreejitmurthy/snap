@@ -4,4 +4,4 @@ snap/.DS_Store
 .vscode
 .idea/
 cmake-build-debug/
-snap/vendor/freetype/2.13.3/include/freetype2/
+/snap/vendor/freetype/2.13.3/include/freetype2/
