@@ -4,3 +4,4 @@ snap/.DS_Store
 .vscode
 .idea/
 cmake-build-debug/
+snap/vendor/freetype/include
