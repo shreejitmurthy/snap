@@ -7,15 +7,27 @@ include_directories(vendor)
 
 add_subdirectory(vendor/SDL)
 add_subdirectory(vendor/cglm)
+include_directories(vendor/freetype/2.13.3/include)
+
+link_directories(vendor/freetype/2.13.3/lib)
 
 set(ENGINE_SOURCES src/gfx.c src/shader.c
         src/keyboard.c
         src/clock.c
+        src/utils.c
 )
+
 add_library(libsnap STATIC ${ENGINE_SOURCES} vendor/glad/glad.c vendor/log/log.c)
 
 target_compile_definitions(libsnap PRIVATE LOG_USE_COLOR)
 
 find_package(OpenGL REQUIRED)
+
 target_include_directories(libsnap PUBLIC ${CMAKE_CURRENT_SOURCE_DIR}/include)
-target_link_libraries(libsnap OpenGL::GL cglm SDL3::SDL3)
+
+target_link_libraries(libsnap
+        OpenGL::GL
+        cglm
+        SDL3::SDL3
+        freetype
+)
