@@ -55,6 +55,13 @@ typedef struct {
     mat4 view;
 } snp_camera;
 
+typedef struct {
+    unsigned int ID;       // ID handle of the glyph texture
+    ivec2 size;            // Size of glyph
+    ivec2 bearing;         // Offset from baseline to left/top of glyph
+    unsigned int advance;  // Offset to advance to next glyph
+} snp_character;
+
 struct {
     snp_window_args win_args;
     SDL_Window* win;

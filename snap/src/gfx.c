@@ -300,3 +300,14 @@ void snp_camera_detach() {
     snp_shader_set_mat4(snp_app_state.texture_shader, "projection", proj);
     snp_shader_set_mat4(snp_app_state.texture_shader, "view", view);
 }
+
+/*
+   ___________               __
+   \_   _____/____    ____ _/  |_
+    |    __) /  _ \  /    \\   __\
+    |     \ (  <_> )|   |  \|  |
+    \___  /  \____/ |___|  /|__|
+        \/               \/
+ */
+
+
