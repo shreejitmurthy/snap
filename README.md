@@ -1,5 +1,5 @@
 # Snap Game Framework
-Snap is a game framework written in C99 with OpenGL.
+Snap is a 2D game framework written in C99 with OpenGL.
 
 ## Purpose
 Snap was written, for the most part, with learning in mind. One of my previous projects called `aif-graphics` (it is a public repository on my account) is a graphics library written in C++ for a subject called AIF in Year 12, it was the product of a learning journey where **many** mistakes were made. It was in that project that I learnt how I function as a programmer, and through making mistakes, I learnt what to do and what not to do when making projects such as that one. It was this that guided my philosophy for this very simple game framework.
@@ -15,6 +15,3 @@ If someone wishes to use this library, for some odd reason, they should look tow
 - [X] Image Tinting
 - [ ] Text Rendering
 - [ ] Shape Rendering
-
-## Projects That Use Snap
-None, yet...
