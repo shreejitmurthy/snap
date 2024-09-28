@@ -8,7 +8,7 @@ Snap was written, for the most part, with learning in mind. One of my previous p
 Snap aims to be a simple and intuitive game framework. While working with C++ in `aif-graphics`, I encountered the language's inherent complexity and verbosity, which are expected given C++ is a superset of C. As a result, I decided that C++ would not be my language of choice for my next project. I chose C99, a daunting shift since I had limited experience with languages below C++. Initially, the transition was challenging due to quality-of-life features (or lack thereof) seen in C++. However, I soon adapted and found myself quite comfortable. Although my codebase might not meet industry standards and there are certainly improvements to be made, I thoroughly enjoyed working with C.
 
 ## Usage
-If someone wishes to use this library, for some odd reason, they should look towards the `examples/` folder that contains a CMake build script and example code file that uses all the current features of Snap.
+If someone wishes to use this library, for some odd reason, they should look towards the `examples/` folder that contains a CMake build script and example code file that uses all the current features of Snap. Clone the repo recursively and build witht the CMake example build script. Note that cloning, building and running has only been tested on macOS, as that is my current OS, so it is likely that building and compiling will fail.
 
 ## Roadmap (Things TODO):
 ### September 2024
